@@ -1,0 +1,9 @@
+## use to set up the hub in a hub in all setups
+[server]
+allow-cors = false
+bind-host = true
+host = "localhost"
+# https-certificate = ""
+# https-private-key = ""
+port = 4444
+# registration-secret = ""

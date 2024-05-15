@@ -1,0 +1,24 @@
+[node]
+## detect-drivers = true will detect that webdrivers (chromedriver, geckodriver) are in the same folder as the grid jar
+detect-drivers = true
+#drain-after-session-count = 1
+[[node.driver-configuration]]
+display-name = "Firefox"
+webdriver-executable = "./jar/geckodriver.exe"
+max-sessions = 10
+stereotype = "{\"browserName\": \"firefox\", \"browserVersion\": \"*\"}"
+## driver-factories = ["org.openqa.selenium.example.LynxDriverFactory" '{"browserName": "lynx"}']
+driver-implementation = ["firefox"]
+grid-url = "https://localhost:4444/"
+heartbeat-period = 150
+hub = "localhost"
+implementation = "org.openqa.selenium.grid.node.local.LocalNodeFactory"
+## Open Sourced VNC client allowing the virtual control of any of our tests as they are running by an actual human
+# Also may be used to record videos of our tests if we want to be able to see the test replay
+#no-vnc-port = 7900
+override-max-sessions = false
+register-cycle = 10
+register-period = 120
+session-timeout = 300
+## The Environment variable associated with our VNC client
+#vnc-env-var = ""

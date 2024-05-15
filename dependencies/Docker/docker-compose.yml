@@ -1,0 +1,26 @@
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:latest
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_GRID_MAX_SESSIONS=10
+      - GRID_BROWSER_TIMEOUT=300
+      - GRID_TIMEOUT=300
+  chrome:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    volumes:
+      - ../suites/test_artefacts/downloads:/home/seluser/Downloads/
+    depends_on: 
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    deploy:
+      replicas: 4
+ 

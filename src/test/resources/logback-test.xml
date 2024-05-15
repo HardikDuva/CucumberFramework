@@ -1,0 +1,60 @@
+<configuration>
+    <!-- Variables that will be used in the XML can be instantiated like this -->
+    <!-- The Key is the name you will use to refer to this variable -->
+    <timestamp key="timestamp" datePattern="MM_dd_yyyy"/>
+    <!-- This appender outputs everything to the console/terminal/command prompt-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%thread][%highlight(%-4level)] %d{HH:mm:ss} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- This appender is used to produce the Full Framework log -->
+    <appender name="FW_Log" class="ch.qos.logback.core.FileAppender">
+        <file>_logs/${timestamp}/FrameworkLogs/Full_Framework_Log.log</file>
+        <!-- We want to rewrite this file every time we are asked to write to it -->
+        <append>false</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+<!--            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n</pattern>-->
+        </encoder>
+    </appender>
+
+    <!-- This appender sorts the log messages using a discriminator to differentiate between message owners -->
+    <appender name="roleSiftingAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <!-- The discriminator is a key value pair -->
+        <discriminator>
+            <key>test-case-id</key>
+            <defaultValue>0</defaultValue>
+        </discriminator>
+        <!-- This Sift element is where we define the type of appender this is and how to name the file -->
+        <sift>
+            <appender name="htmlAppender" class="ch.qos.logback.core.FileAppender">
+                <file>_logs/Test-Case-Logs/${test-case-id}_${timestamp}.html</file>
+                <!-- We want to rewrite this file every time we are asked to write to it -->
+                <append>false</append>
+                <!-- This defines how a message should appear when written out-->
+                <encoder>
+                    <pattern>%d %level - %msg%n</pattern>
+                </encoder>
+                <!-- The pattern defined here defines the columns of the table in our log file -->
+                <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                    <layout class="ch.qos.logback.classic.html.HTMLLayout">
+                        <pattern>%d%level%msg</pattern>
+                    </layout>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <!-- The level set here determines the type of output -->
+    <!-- The levels are TRACE, DEBUG, INFO, WARN, ERROR -->
+    <root level="info">
+        <!-- To turn off output to STDOUT (output to the command prompt) comment out the following line -->
+        <appender-ref ref="STDOUT" />
+        <!-- To turn off output to the FUll Framework Log file comment out the following line -->
+        <appender-ref ref="FW_Log" />
+        <!-- To turn off output to the individual test case log files comment out the following line -->
+        <appender-ref ref="roleSiftingAppender" />
+    </root>
+</configuration>

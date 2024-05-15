@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="__Amazon_Edge_Full_Regression_Suite" parallel="tests" data-provider-thread-count="4">
+    <parameter name="BROWSER" value="MicrosoftEdge"/>
+    <parameter name="BROWSER_VERSION" value="latest"/>
+    <parameter name="PLATFORM" value="Windows 11"/>
+    <parameter name="PLATFORM_VERSION" value="latest"/>
+    <test name="Amazon Edge - Full Regression">
+        <classes>
+            <class name="com.amazon.parallel.suite_glue.desktop.AmazonPCFullRegressionTest" />
+        </classes>
+    </test>
+</suite>
