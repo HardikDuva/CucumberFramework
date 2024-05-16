@@ -1,10 +1,10 @@
 @smoke_regression
-@TEST-274
+@TEST-1
 @search_product
 
-Feature: TEST-274
+Feature: TEST-1
  Background:
-  Given I Initialize the framework with "TEST-274"
+  Given I Initialize the framework with "TEST-1"
   Given I am anonymous user on Amazon Home Page
 
   Scenario: As any user, I can search for products using search bar.

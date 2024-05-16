@@ -17,11 +17,11 @@ import java.time.format.DateTimeFormatter;
 import static com.amazon.models.ProductURLs.AMAZON_PROD;
 import static com.amazon.utilities.TestLogger.info;
 
-
 @CucumberOptions(
 		plugin = {"html:_reports/full_regression/full_regression-html-report.html",
 				"json:_reports/full_regression/full_regression.json",
 				"pretty"},
+		glue = {"com.amazon.parallel"},
 		features = {"src/test/resources/TestCases"},
 		tags = "@full_regression"
 )

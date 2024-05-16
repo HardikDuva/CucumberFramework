@@ -22,6 +22,7 @@ import static com.amazon.utilities.TestLogger.info;
         plugin = {"html:_reports/mobile_full_regression/mobile_full_regression-html-report.html",
                 "json:_reports/mobile_full_regression/mobile_full_regression.json",
                 "pretty"},
+        glue = {"com.amazon.parallel"},
         features = {"src/test/resources/TestCases"},
         tags = "@full_regression"
 )

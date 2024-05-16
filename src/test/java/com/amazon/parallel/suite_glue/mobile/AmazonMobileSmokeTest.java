@@ -21,6 +21,7 @@ import static com.amazon.models.ProductURLs.AMAZON_DEV;
         plugin = {"html:_reports/mobile_smoke_regression/mobile_smoke_regression-html-report.html",
                 "json:_reports/mobile_smoke_regression/mobile_smoke_regression.json",
                 "pretty"},
+        glue = {"com.amazon.parallel"},
         features = {"src/test/resources/TestCases"},
         tags = "@smoke_regression"
 )

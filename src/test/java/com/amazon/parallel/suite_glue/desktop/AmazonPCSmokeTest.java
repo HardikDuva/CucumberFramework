@@ -22,7 +22,7 @@ import static com.amazon.models.ProductURLs.AMAZON_PROD;
                 "pretty"},
         glue = {"com.amazon.parallel"},
         features = {"src/test/resources/TestCases"},
-        tags = "@TEST-274"
+        tags = "@smoke_regression"
 )
 
 public class AmazonPCSmokeTest extends AbstractTestNGCucumberTests {

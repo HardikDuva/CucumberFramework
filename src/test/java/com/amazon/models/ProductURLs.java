@@ -3,7 +3,6 @@ import static com.amazon.utilities.TestLogger.info;
 
 public class ProductURLs {
 
-	public static final String AMAZON_UAT = "https://www.amazon.uat.in/";
 	public static final String AMAZON_DEV = "https://www.amazon.dev.in/";
 	public static final String AMAZON_PROD = "https://www.amazon.in";
 	private static String currentProductTestEnvironment = "";
@@ -21,9 +20,7 @@ public class ProductURLs {
 		String returnVersion = "NOT_OBTAINED";
 
 		if (currentProductTestEnvironment.contains("amazon")) {
-			if (currentProductTestEnvironment.contains("uat")) {
-				returnVersion = "AMAZON_UAT";
-			} else if (currentProductTestEnvironment.contains("dev")) {
+			if (currentProductTestEnvironment.contains("dev")) {
 				returnVersion = "AMAZON_DEV";
 			}
 			else  {
