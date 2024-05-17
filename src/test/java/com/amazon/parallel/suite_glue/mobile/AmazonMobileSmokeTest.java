@@ -25,6 +25,7 @@ import static com.amazon.models.ProductURLs.AMAZON_DEV;
         features = {"src/test/resources/TestCases"},
         tags = "@smoke_regression"
 )
+
 public class AmazonMobileSmokeTest extends AbstractTestNGCucumberTests {
 
     /**

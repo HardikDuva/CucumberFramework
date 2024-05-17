@@ -349,8 +349,6 @@ public class SystemEnvironment {
                         + " has failed. A screenshot was attempted "
                         + "and if successful, was embedded in the Cucumber "
                         + "Report.");
-                JavascriptExecutor js = (JavascriptExecutor) driver;
-                js.executeScript("status=failed");
 
             } else {
                 if (null != driver) {
@@ -363,9 +361,6 @@ public class SystemEnvironment {
                             scenario.getName());
                 }
             }
-        } else {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("status=passed");
         }
 
         // the driver should absolutely be quit by now, if not, quit it

@@ -1,26 +1,20 @@
 package com.amazon.utilities;
 
-import com.amazon.models.ProductURLs;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.SessionNotCreatedException;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
-
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.logging.Level;
 
+import static com.amazon.utilities.TestConstants.DOCKER_GRID_URL;
 import static com.amazon.utilities.TestLogger.info;
 import static com.amazon.utilities.TestLogger.error;
 
@@ -30,6 +24,12 @@ public final class RemoteWebDriverFactoryMobile {
      * There should be no instance of this class.
      */
     private RemoteWebDriverFactoryMobile() { }
+
+    /**
+     * The singleton Remote WebDriver for this test.
+     */
+    private static final ThreadLocal<RemoteWebDriver> DRIVER_THREAD_LOCAL
+            = new ThreadLocal<RemoteWebDriver>();
 
     /**
      * The browser name.
@@ -174,12 +174,6 @@ public final class RemoteWebDriverFactoryMobile {
         mTestName = testName;
     }
 
-    /**
-     * The singleton Remote WebDriver for this test.
-     */
-    private static final ThreadLocal<RemoteWebDriver> DRIVER_THREAD_LOCAL
-            = new ThreadLocal<RemoteWebDriver>();
-
     /***
      * Returns a Thread safe WebDriver instance of the flavour passed
      * through the 'browser' parameter.
@@ -190,9 +184,7 @@ public final class RemoteWebDriverFactoryMobile {
                 mBrowserVersion,
                 mPlatform,
                 mPlatformVersion,
-                mDeviceName,
-                mApp,
-                mBuildSuiteName);
+                mDeviceName);
     }
 
     /**
@@ -202,8 +194,6 @@ public final class RemoteWebDriverFactoryMobile {
      * @param platform The platform name.
      * @param platformVersion The platform version.
      * @param deviceName The name of the device.
-     * @param app The path to the native app.
-     * @param buildName The name of the build.
      * @return - The instantiated Thread safe WebDriver object.
      */
     private static RemoteWebDriver setDriver(
@@ -211,19 +201,14 @@ public final class RemoteWebDriverFactoryMobile {
             final String browserVersion,
             final String platform,
             final String platformVersion,
-            final String deviceName,
-            final String app,
-            final String buildName) {
+            final String deviceName) {
         instantiateWebDriver(browser,
                 browserVersion,
                 platform,
                 platformVersion,
-                deviceName,
-                app,
-                buildName);
+                deviceName);
 
-        if (null != DRIVER_THREAD_LOCAL.get()
-                && app.isEmpty()) {
+        if (null != DRIVER_THREAD_LOCAL.get()) {
             DRIVER_THREAD_LOCAL.get()
                     .manage()
                     .timeouts()
@@ -258,192 +243,73 @@ public final class RemoteWebDriverFactoryMobile {
      *                 example('ios', 'windows').
      * @param platformVersion - The Platform version.
      * @param deviceName - The name of the device.
-     * @param app - The Path to the native app.
-     * @param buildName - The name of the build.
      */
     private static void instantiateWebDriver(final String browser,
                                              final String browserVersion,
                                              final String platform,
                                              final String platformVersion,
-                                             final String deviceName,
-                                             final String app,
-                                             final String buildName) {
-        // If there is an App defined then we don't need the web browser
-        // to be set up
-        if (!app.isEmpty()) {
-            info("Testing App ["
-                    + app
-                    + "] in a ["
-                    + platform
-                    + " v=["
-                    + platformVersion
-                    + "]] container, using device ["
-                    + deviceName
-                    + "]");
-        } else {
-            info("Working in a ["
-                    + platform
-                    + " v=["
-                    + platformVersion
-                    + "]] container, setting up driver for ["
-                    + browser
-                    + " v=["
-                    + browserVersion
-                    + "]] using device ["
-                    + deviceName
-                    + "]");
-        }
+                                             final String deviceName) {
+
+        info("Working in a ["
+                + platform
+                + " v=["
+                + platformVersion
+                + "]] container, setting up driver for ["
+                + browser
+                + " v=["
+                + browserVersion
+                + "]] using device ["
+                + deviceName
+                + "]");
 
         MutableCapabilities options = null;
-        options = new DesiredCapabilities();
 
-        HashMap<String, Object> ltOptions;
+        switch (platform) {
+            case "android":
+                options = new UiAutomator2Options();
+                    //((UiAutomator2Options) options).setApp("");
+                    ((UiAutomator2Options) options).setAutomationName("UIAutomator2");
+                    ((UiAutomator2Options) options).setPlatformName(platform);
+                    ((UiAutomator2Options) options).setPlatformVersion(platformVersion);
+                    ((UiAutomator2Options) options).setDeviceName(deviceName);
+                    ((UiAutomator2Options) options).setAdbPort(6080);
+                    options.setCapability("browserName", browser);
 
-        if (!app.isEmpty()) {
-            ltOptions = getOptions(platform,
-                    platformVersion,
-                    deviceName,
-                    buildName,
-                    mTestName,
-                    ProductURLs.getProductName(),
-                    app);
-        } else {
-            ltOptions = getOptions(platform,
-                    platformVersion,
-                    deviceName,
-                    buildName,
-                    mTestName,
-                    ProductURLs.getProductName());
+                break;
+            case "ios":
+                // do stuff
+                break;
         }
 
-        if (platform.equals("ios")) {
-            options = new DesiredCapabilities();
-            options.setCapability("LT:Options", ltOptions);
-        } else {
-            // This is an Android Device.
-            HashMap<String, Object> prefs
-                    = new HashMap<String, Object>();
-            prefs.put(
-                    "profile.default_content_setting_values"
-                            + ".notifications",
-                    2);
-            ChromeOptions cOptions = new ChromeOptions();
-            cOptions.setExperimentalOption("prefs", prefs);
-            LoggingPreferences logPrefs = new LoggingPreferences();
-            // LogType: Browser, Server, Driver, Client, Performance
-            // and Profiler
-            logPrefs.enable(LogType.BROWSER, Level.ALL);
-            cOptions.setCapability("goog:loggingPrefs", logPrefs);
-            options.merge(cOptions);
-
-            options.setCapability("LT:Options", ltOptions);
-        }
         if (null != options) {
             options = options.merge(options);
         }
 
         try {
             if (null != options) {
-                if (platform.equalsIgnoreCase("ios")) {
-                    DRIVER_THREAD_LOCAL.set(
-                            new IOSDriver(
-                                    new URI(TestConstants.DOCKER_GRID_URL)
-                                            .toURL(),
-                                    options));
-                } else if (platform.equalsIgnoreCase("android")) {
-                    DRIVER_THREAD_LOCAL.set(
-                            new AndroidDriver(
-                                    new URI(TestConstants.DOCKER_GRID_URL)
-                                            .toURL(),
-                                    options));
-                } else {
-                    DRIVER_THREAD_LOCAL.set(
-                            new RemoteWebDriver(
-                                    new URI(TestConstants.DOCKER_GRID_URL)
-                                            .toURL(),
-                                    options));
-                }
+                DRIVER_THREAD_LOCAL.set(new RemoteWebDriver(new URL(DOCKER_GRID_URL), options));
             }
 
-            // If the WebDriver has been set
-            if (null != DRIVER_THREAD_LOCAL.get()) {
-                // Set this below to ensure that files can be found when using
-                // a dockerized grid
-                DRIVER_THREAD_LOCAL.get()
-                        .setFileDetector(new LocalFileDetector());
+            // If the webdriver has been set
+            if (null != DRIVER_THREAD_LOCAL.get()){
+                // Set this below to ensure that files can be found when using a dockerized grid
+                DRIVER_THREAD_LOCAL.get().setFileDetector(new LocalFileDetector());
             }
 
-        } catch (URISyntaxException e) {
-            error("\nURI Syntax Exception while connecting to the "
-                    + "Selenium GRID Hub\n" + e.getMessage());
         } catch (MalformedURLException e) {
-            error("\nMalformed URL Exception while connecting to the "
-                    + "Selenium GRID Hub\n" + e.getMessage());
+            error("\nMalformed URL Exception while connecting to the Selenium GRID Hub\n" + e.getMessage());
         } catch (SessionNotCreatedException e) {
-            if (!app.isEmpty()) {
-                error("Selenium Grid was unable to create a session"
-                        + " using the following capabilities: \n"
-                        + "PlatformName = " + platform + "\n"
-                        + "PlatformVersion = " + platformVersion + "\n"
-                        + "DeviceName = " + deviceName + "\n"
-                        + "App = " + app, e);
-            } else {
-                error("Selenium Grid was unable to create a session"
-                        + " using the following capabilities: \n"
-                        + "BrowserName = " + browser + "\n"
-                        + "BrowserVersion = " + browserVersion + "\n"
-                        + "PlatformName = " + platform + "\n"
-                        + "PlatformVersion = " + platformVersion + "\n"
-                        + "DeviceName = " + deviceName + "\n", e);
-            }
+            error("Selenium Grid was unable to create a session using the following capabilities: \n"
+                    + "BrowserName = " + browser + "\n"
+                    + "BrowserVersion = " + browserVersion + "\n"
+                    + "PlatformName = " + platform + "\n"
+                    + "PlatformVersion = " + platformVersion + "\n"
+                    + "DeviceName = " + deviceName + "\n", e);
         }
-        if (null != DRIVER_THREAD_LOCAL.get()) {
+
+        if (null != DRIVER_THREAD_LOCAL.get()){
             info("Remote WebDriver has connected to the Grid");
         }
     }
 
-    /**
-     * Retrieve the LambdaTest Options for this Remote WebDriver instance.
-     * @param platform The platform to test on.
-     * @param platformVersion The version of the platform to test on.
-     * @param deviceName The device name.
-     * @param buildName The build name.
-     * @param testName The test name.
-     * @param projectName The project name.
-     * @param app The path to the native app.
-     * @return A {@link HashMap } containing the LambdaTest options.
-     */
-    private static HashMap<String, Object> getOptions(
-            final String platform,
-            final String platformVersion,
-            final String deviceName,
-            final String buildName,
-            final String testName,
-            final String projectName,
-            final String... app) {
-
-        HashMap<String, Object> options = new HashMap<>();
-        options.put("w3c", true);
-        options.put("platformName", platform);
-        options.put("deviceName", deviceName);
-        options.put("platformVersion", platformVersion);
-        options.put("build", (TestConstants.DEPLOYMENT_RUN)
-                ? "Deploy_" + buildName
-                : buildName);
-        options.put("name", testName);
-        options.put("project", projectName);
-        options.put("deviceOrientation", "portrait");
-        options.put("autoGrantPermissions", true);
-        options.put("autoAcceptAlerts", true);
-        options.put("console", true);
-        options.put("visual", true);
-        options.put("terminal", true);
-
-        // Only set the App path if it was passed in.
-        if (app.length > 0) {
-            options.put("app", app[0]);
-        }
-
-        return options;
-    }
 }
