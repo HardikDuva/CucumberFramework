@@ -5,12 +5,10 @@ import com.amazon.pages.amazon.AmazonNavMenu;
 import com.amazon.pages.amazon.home.HomePage;
 import com.amazon.pages.amazon.home.ProductSearchResultPage;
 import com.amazon.utilities.TestConstants;
-import com.amazon.utilities.RemoteWebDriverFactoryMobile;
 import com.amazon.utilities.RemoteWebDriverFactory;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -237,68 +235,10 @@ public class SystemEnvironment {
         log += "</br><span><table><tbody>";
         log += "<tr><th><b>Test Data</b></th></tr>";
 
-        // if you are a mobile test you will have a device name
-        // otherwise you are a browser test
-        if (RemoteWebDriverFactoryMobile.getDeviceName().isEmpty()) {
-            // This is a WebDriver Test
-            // set the browsername, version, platform name and version
-            log += "<tr><td>Browser Name :</td><td>"
-                    + RemoteWebDriverFactory.getBrowser()
-                    + "</td></tr>";
-            log += "<tr><td>Browser Version :</td><td>"
-                    + RemoteWebDriverFactory.getBrowserVersion()
-                    + "</td></tr>";
-            log += "<tr><td>Platform Name :</td><td>"
-                    + RemoteWebDriverFactory.getPlatform()
-                    + "</td></tr>";
-            log += "<tr><td>Platform Version :</td><td>"
-                    + RemoteWebDriverFactory.getPlatformVersion()
-                    + "</td></tr>";
-        } else {
-            if (RemoteWebDriverFactoryMobile.getApp().isEmpty()) {
-                // This is an Appium Browser Test
-                // set the browsername and version
-                log += "<tr><td>Browser Name :</td><td>"
-                        + RemoteWebDriverFactoryMobile.getBrowser()
-                        + "</td></tr>";
-                log += "<tr><td>Browser Version :</td><td>"
-                        + RemoteWebDriverFactoryMobile.getBrowserVersion()
-                        + "</td></tr>";
-            } else {
-                // This is an Appium Application Test
-                // set the app
-                log += "<tr><td>Application Path :</td><td>"
-                        + RemoteWebDriverFactoryMobile.getApp()
-                        + "</td></tr>";
-            }
-        }
-
         log += "<tr><td>User Name :</td><td>" + createdUsername + "</td></tr>";
 
         featureName = "TEST-" + String.valueOf(scenario.getUri())
                 .split("TEST-")[1].split("\\.")[0];
-
-        if (RemoteWebDriverFactoryMobile.getDeviceName().isEmpty()) {
-            featureName = featureName
-                    + "_"
-                    + RemoteWebDriverFactory.getBrowser()
-                    + "_"
-                    + dtfmonth.format(localDateTime);
-        } else {
-            if (RemoteWebDriverFactoryMobile.getApp().isEmpty()) {
-                featureName = featureName
-                        + "_"
-                        + RemoteWebDriverFactoryMobile.getBrowser()
-                        + "_"
-                        + dtfmonth.format(localDateTime);
-            } else {
-                featureName = featureName
-                        + "_"
-                        + RemoteWebDriverFactory.getBrowser()
-                        + "_"
-                        + dtfmonth.format(localDateTime);
-            }
-        }
 
         // The test begins now
         testStartTime = LocalTime.now();
@@ -321,9 +261,7 @@ public class SystemEnvironment {
 
         if (scenario.isFailed()) {
             // Take a screenshot and embed it in the Cucumber Report
-            if (null != driver && RemoteWebDriverFactoryMobile
-                    .getDeviceName()
-                    .isEmpty()) {
+            if (null != driver) {
                 final byte[] screenshot = ((TakesScreenshot) driver)
                         .getScreenshotAs(OutputType.BYTES);
                 scenario.attach(screenshot, "image/png",

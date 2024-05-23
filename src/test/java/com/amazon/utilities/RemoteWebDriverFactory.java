@@ -266,7 +266,7 @@ public final class RemoteWebDriverFactory {
 				browser = "MicrosoftEdge";
 			}
 		}
-
+		
 		if (null != options) {
 			options = options.merge(options);
 		}

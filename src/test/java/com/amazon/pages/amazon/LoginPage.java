@@ -43,11 +43,6 @@ public class LoginPage extends BasePage {
 	 */
 	public LoginPage inputPassword(String password) {
 		info("Entering Password");
-		if (isMobileTest()) {
-			// Close the cookie banner so you can see the password input
-			WebElement cookieBannerCloseButton = findElement(By.xpath("//*[@id=\"js-cookie-banner-close-btn\"]"));
-			click(cookieBannerCloseButton);
-		}
 		waitForVisibility(passwordField);
 		input(passwordField, password);
 		waitStandard();

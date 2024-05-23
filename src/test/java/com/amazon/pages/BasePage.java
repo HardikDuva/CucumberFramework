@@ -1,7 +1,5 @@
 package com.amazon.pages;
 
-import com.amazon.utilities.TestConstants;
-import com.amazon.utilities.RemoteWebDriverFactoryMobile;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
@@ -29,7 +27,7 @@ public abstract class BasePage {
 
 	public BasePage(WebDriver _driver) {
 		driver = _driver;
-
+		
 		newWait = new FluentWait<WebDriver>(driver)
 				.withTimeout(Duration.ofSeconds(WAIT_EXPLICIT))
 				.pollingEvery(Duration.ofSeconds(WAIT_STANDARD))
@@ -41,18 +39,6 @@ public abstract class BasePage {
 		windowHandle = driver.getWindowHandle();
 		PageFactory.initElements(driver, this);
 
-		if (!isSafariTest()) {
-			waitForPageToLoad();
-		}
-
-	}
-
-	public boolean isMobileTest() {
-		return !RemoteWebDriverFactoryMobile.getDeviceName().isEmpty();
-	}
-
-	public boolean isSafariTest() {
-		return RemoteWebDriverFactoryMobile.getBrowser().equalsIgnoreCase("Safari");
 	}
 
 	/***
@@ -64,11 +50,8 @@ public abstract class BasePage {
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		try {
-			if (isMobileTest()) {
-				js.executeScript("arguments[0].scrollIntoView({'block':'center','inline':'center'});", element);
-			} else {
-				js.executeScript("arguments[0].scrollIntoView({behaviour: \"auto\", block: \"center\", inline: \"nearest\"});", element);
-			}
+			js.executeScript("arguments[0].scrollIntoView({behaviour: \"auto\", block: \"center\", inline: \"nearest\"});", element);
+
 			waitStandard();
 		} catch (InvalidElementStateException
 				 | StaleElementReferenceException
@@ -961,10 +944,6 @@ public abstract class BasePage {
 	 * @param <T>     Either a 'By' or a 'WebElement'
 	 */
 	public <T> void click(T element) {
-		if (isMobileTest() && !isSafariTest()) {
-			clickWithJavascript(element);
-			return;
-		}
 		if (null != element) {
 			if (element instanceof WebElement) {
 				if (((WebElement) element).isEnabled()) {

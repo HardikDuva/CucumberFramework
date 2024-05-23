@@ -3,7 +3,6 @@ package com.amazon.parallel;
 import com.amazon.models.User;
 import com.amazon.pages.amazon.home.HomePage;
 import com.amazon.utilities.RemoteWebDriverFactory;
-import com.amazon.utilities.RemoteWebDriverFactoryMobile;
 import io.cucumber.java.en.Given;
 import org.slf4j.MDC;
 
@@ -43,23 +42,11 @@ public class BaseGlue {
      */
     @Given("^I Initialize the framework with \"([^\"]*)\"$")
     public void initializeGlue(final String id) {
-
-        boolean isMobileTest = !RemoteWebDriverFactoryMobile
-                .getDeviceName()
-                .isEmpty();
-        if (isMobileTest) {
-            MDC.put("test-case-id", id + "_"
-                    + RemoteWebDriverFactoryMobile.getBrowser());
-            RemoteWebDriverFactoryMobile.setTestName(id);
-            executeObj.setDriver(RemoteWebDriverFactoryMobile
-                    .getDriver());
-        } else {
-            MDC.put("test-case-id", id + "_"
-                    + RemoteWebDriverFactory.getBrowser());
-            RemoteWebDriverFactory.setTestName(id);
-            executeObj.setDriver(RemoteWebDriverFactory
-                    .getDriver());
-        }
+        MDC.put("test-case-id", id + "_"
+                + RemoteWebDriverFactory.getBrowser());
+        RemoteWebDriverFactory.setTestName(id);
+        executeObj.setDriver(RemoteWebDriverFactory
+                .getDriver());
 
         executeObj.getDriver()
                 .navigate()

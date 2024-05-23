@@ -46,6 +46,7 @@ public class ProductSearchResultPage extends BasePage {
 			scrollIntoView(product);
 			String productNameXPath = "./div//h2/a/span";
 
+
 			String actProductName = getText(findElementInChildren(product,
 					By.xpath(productNameXPath)));
 
