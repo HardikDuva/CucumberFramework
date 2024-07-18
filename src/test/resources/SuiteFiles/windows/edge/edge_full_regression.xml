@@ -7,7 +7,7 @@
     <parameter name="PLATFORM_VERSION" value="latest"/>
     <test name="Amazon Edge - Full Regression">
         <classes>
-            <class name="com.amazon.parallel.suite_glue.desktop.AmazonPCFullRegressionTest" />
+            <class name="com.sauceLab.parallel.suite_glue.SauceLabFullRegressionTest" />
         </classes>
     </test>
 </suite>

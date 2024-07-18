@@ -33,7 +33,7 @@
         </property>
       </activation>
       <build>
-        <finalName>amazon-${product}-automation-framework</finalName>
+        <finalName>sauceLab-${product}-automation-framework</finalName>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -91,7 +91,7 @@
         </property>
       </activation>
       <build>
-        <finalName>amazon-${product}-automation-framework</finalName>
+        <finalName>sauceLab-${product}-automation-framework</finalName>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
