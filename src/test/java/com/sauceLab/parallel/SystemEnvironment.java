@@ -319,6 +319,9 @@ public class SystemEnvironment {
                         }
                     }
                 }
+
+
+
             } else {
                 warn("The path : [" + path + "] does not exist. The logs "
                         + "will not be added to the report for this test.");
