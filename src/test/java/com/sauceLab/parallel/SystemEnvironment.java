@@ -1,9 +1,12 @@
 package com.sauceLab.parallel;
 
 import com.sauceLab.models.ProductURLs;
+import com.sauceLab.models.User;
 import com.sauceLab.pages.sauceLab.login.LoginPage;
+import com.sauceLab.utilities.RemoteWebDriverFactory;
 import com.sauceLab.utilities.TestConstants;
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -11,11 +14,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import com.sauceLab.models.User;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -44,7 +48,7 @@ public class SystemEnvironment {
     /**
      * The name of user.
      */
-    public String userName;
+    public String username;
 
     /**
      * The log of this test.
@@ -127,6 +131,23 @@ public class SystemEnvironment {
     }
 
     /**
+     * Retrieve the Username.
+     * @return A {@link String } containing a randomly
+     * generated username.
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Set the Username.
+     * @param userName The username.
+     */
+    public void setUsername(final String userName) {
+        this.username = userName;
+    }
+
+    /**
      * Set the Test User.
      * @param user The user.
      */
@@ -156,10 +177,43 @@ public class SystemEnvironment {
     }
 
     /**
+     * This method is called before each scenario executes. It sets the
+     * initial username of the Test User, Creates the Framework log and a log
+     * for this scenario, logs the metadata of the scenario to the log, and
+     * logs the start time of the test.
+     * @param scenario The {@link Scenario } that is just about to begin.
+     */
+    @Before
+    public void beforeScenario(final Scenario scenario) {
+        // Log test details into an HTML table to display in the HTML report
+        log = "<h2>Framework Console Logs</h2>";
+        log += "</br><span><table><tbody>";
+        log += "<tr><th><b>Test Data</b></th></tr>";
+
+        log += "<tr><td>Browser Name :</td><td>"
+                + RemoteWebDriverFactory.getBrowser()
+                + "</td></tr>";
+
+        featureName = "TEST-" + String.valueOf(scenario.getUri())
+                .split("TEST-")[1].split("\\.")[0];
+
+        DateTimeFormatter dtfmonth = DateTimeFormatter.ofPattern("MM_dd_uuuu");
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        featureName = featureName
+                + "_"
+                + RemoteWebDriverFactory.getBrowser()
+                + "_"
+                + dtfmonth.format(localDateTime);
+
+        // The test begins now
+        testStartTime = LocalTime.now();
+    }
+
+    /**
      * This method is called after each scenario. It cleans up the Remote
      * WebDriver, collects all logs and takes a screenshot if required then
      * packages that all up in the Cucumber Report.
-     * @param scenario The {@link Scenario } that just ended.
      */
     @After
     public void afterScenario(final Scenario scenario) {
@@ -172,44 +226,31 @@ public class SystemEnvironment {
 
         if (scenario.isFailed()) {
             // Take a screenshot and embed it in the Cucumber Report
-            if (null != driver) {
-                final byte[] screenshot = ((TakesScreenshot) driver)
-                        .getScreenshotAs(OutputType.BYTES);
-                scenario.attach(screenshot, "image/png",
-                        scenario.getName());
+            final byte[] screenshot = ((TakesScreenshot) driver)
+                    .getScreenshotAs(OutputType.BYTES);
+            scenario.attach(screenshot, "image/png",
+                    scenario.getName());
 
-                // Log the current URL into the HTML table
-                log += "<tr><td>URL :</td><td>"
-                        + driver.getCurrentUrl()
+            // Log the current URL into the HTML table
+            log += "<tr><td>URL :</td><td>"
+                    + driver.getCurrentUrl()
+                    + "</td></tr>";
+
+            // if a Test User was created for this test
+
+            if (null != testUser) {
+                // log the test user's name into the table
+                log += "<tr><td>TestUser name :</td><td>"
+                        + testUser.userName
                         + "</td></tr>";
-
-                // if a Test User was created for this test
-
-                if (null != testUser) {
-                    // log the test user's name into the table
-                    log += "<tr><td>TestUser name :</td><td>"
-                            + testUser.userName
-                            + "</td></tr>";
-                }
-
-                // indicate that a screenshot was captured in the
-                // standard output
-                info("The Scenario : " + scenario.getName()
-                        + " has failed. A screenshot was attempted "
-                        + "and if successful, was embedded in the Cucumber "
-                        + "Report.");
-
-            } else {
-                if (null != driver) {
-                    final byte[] screenshot = ((TakesScreenshot) driver)
-                            .getScreenshotAs(OutputType.BYTES);
-
-                    // remove any line breaks in the file (/r or /n)
-                    System.out.println(Arrays.toString(screenshot));
-                    scenario.attach(screenshot, "image/png",
-                            scenario.getName());
-                }
             }
+
+            // indicate that a screenshot was captured in the
+            // standard output
+            info("The Scenario : " + scenario.getName()
+                    + " has failed. A screenshot was attempted "
+                    + "and if successful, was embedded in the Cucumber "
+                    + "Report.");
         }
 
         // the driver should absolutely be quit by now, if not, quit it

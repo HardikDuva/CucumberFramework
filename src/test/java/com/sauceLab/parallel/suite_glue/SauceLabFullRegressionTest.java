@@ -41,7 +41,6 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
      */
     @Parameters({
             "BROWSER",
-            "BROWSER_VERSION",
 			"CLIENT",
             "PRODUCT_URL"})
 	@BeforeSuite
@@ -57,11 +56,11 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 				browser.toLowerCase(),
 				suiteName);
 
-		UserDetailsConfig.init(System.getProperty("user.dir")
-				+ "/dependencies/client" + client + "/fw_config/user.properties");
-
         FrameworkConfig.init(System.getProperty("user.dir")
-                + "/dependencies/fw_config/fw_config.properties");
+                + "/dependencies/FW_Config/FW_Config.properties");
+
+		UserDetailsConfig.init(System.getProperty("user.dir")
+				+ "/dependencies/client/" + client + "/user.properties");
 
 		// set the url for these tests
 		ProductURLs.setCurrentProductEnvironment(productURL);

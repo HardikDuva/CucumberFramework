@@ -17,22 +17,12 @@ public class BaseGlue {
     private final SystemEnvironment sauceLabObj;
 
     /**
-     * The potential number of staggers to make.
-     */
-    private static int staggerCounter;
-
-    /**
-     * The maximum number of stagger starts.
-     */
-    private final int maxStaggers = 4;
-
-    /**
      * There should be no instance of this class.
      * @param sysEnv The environment.
      */
     public BaseGlue(final SystemEnvironment sysEnv) {
         this.sauceLabObj = sysEnv;
-        staggerCounter = maxStaggers;
+
     }
 
     /**

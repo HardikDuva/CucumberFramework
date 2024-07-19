@@ -14,6 +14,12 @@ public final class TestConstants {
 			= UserDetailsConfig.get("UserName");
 
 	/**
+	 * The HOMEPAGEURL
+	 */
+	public static final String HOMEPAGEURL
+			= UserDetailsConfig.get("HomePageURL");
+
+	/**
 	 * The Password
 	 */
 	public static final String PASSWORD
@@ -36,14 +42,6 @@ public final class TestConstants {
 	 */
 	public static final String EMAIL_PORT
 			= FrameworkConfig.get("EMAIL_PORT");
-
-	/**
-	 * Whether this will be a deployment execution.
-	 */
-	public static final boolean DEPLOYMENT_RUN
-			= FrameworkConfig
-			.get("DEPLOYMENT_RUN")
-			.equalsIgnoreCase("true");
 
 	/**
 	 * The
@@ -87,20 +85,6 @@ public final class TestConstants {
 	public static final int WAIT_STANDARD
 			= Integer.parseInt(
 			FrameworkConfig.get("WAIT_STANDARD"));
-
-	/***
-	 * Implicit wait of 4 seconds (WebDriver variable).
-	 */
-	public static final int WAIT_IMPLICIT
-			= Integer.parseInt(
-			FrameworkConfig.get("WAIT_IMPLICIT"));
-
-	/***
-	 * Implicit wait of 20 seconds for pages to load.
-	 */
-	public static final int WAIT_IMPLICIT_PAGE
-			= Integer.parseInt(
-			FrameworkConfig.get("WAIT_IMPLICIT_PAGE"));
 
 	/***
 	 * Explicit wait of 30 seconds (WebDriver variable).

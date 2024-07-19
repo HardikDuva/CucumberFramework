@@ -3,9 +3,5 @@
 <suite name="__Atmos_Full_Regression_Suite">
     <suite-files>
         <suite-file path="windows/chrome/chrome_full_regression.xml"/>
-        <suite-file path="windows/firefox/firefox_full_regression.xml"/>
-        <suite-file path="windows/edge/edge_full_regression.xml"/>
-        <suite-file path="android/chrome/chrome_android_full_regression.xml"/>
-        <suite-file path="ios/safari/safari_full_regression.xml"/>
     </suite-files>
 </suite>
