@@ -304,7 +304,7 @@ public class SystemEnvironment {
                             line = line
                                     .toLowerCase()
                                     .replace("tr.odd { "
-                                            + "background: #eaeaea; }",
+                                                    + "background: #eaeaea; }",
                                             "tr"
                                                     + ".odd { background: "
                                                     + "#eaeaea; color: "
@@ -319,8 +319,6 @@ public class SystemEnvironment {
                         }
                     }
                 }
-
-
 
             } else {
                 warn("The path : [" + path + "] does not exist. The logs "
