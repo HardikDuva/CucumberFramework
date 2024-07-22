@@ -1,6 +1,5 @@
 package com.sauceLab.parallel;
 
-import com.sauceLab.models.User;
 import com.sauceLab.pages.sauceLab.login.LoginPage;
 import com.sauceLab.utilities.RemoteWebDriverFactory;
 import io.cucumber.java.en.Given;
@@ -60,14 +59,6 @@ public class BaseGlue {
 
         sauceLabObj.setLoginPage(new LoginPage(sauceLabObj
                 .getDriver()));
-    }
-
-    /**
-     * I am registered user on Sauce Lab Login Page
-     */
-    @Given("^I am registered user on Login Page$")
-    public void loginAsaNewUser() {
-        sauceLabObj.setTestUser(new User());
     }
 
 }

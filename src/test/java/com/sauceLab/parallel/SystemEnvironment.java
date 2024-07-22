@@ -1,7 +1,6 @@
 package com.sauceLab.parallel;
 
 import com.sauceLab.models.ProductURLs;
-import com.sauceLab.models.User;
 import com.sauceLab.pages.sauceLab.login.LoginPage;
 import com.sauceLab.utilities.RemoteWebDriverFactory;
 import com.sauceLab.utilities.TestConstants;
@@ -39,11 +38,6 @@ public class SystemEnvironment {
      * The name of this feature file.
      */
     private String featureName;
-
-    /**
-     * The User class obj.
-     */
-    User testUser;
 
     /**
      * The name of user.
@@ -123,14 +117,6 @@ public class SystemEnvironment {
     }
 
     /**
-     * Retrieve the Test User.
-     * @return A {@link User } set as the test uesr.
-     */
-    public User getTestUser() {
-        return testUser;
-    }
-
-    /**
      * Retrieve the Username.
      * @return A {@link String } containing a randomly
      * generated username.
@@ -145,14 +131,6 @@ public class SystemEnvironment {
      */
     public void setUsername(final String userName) {
         this.username = userName;
-    }
-
-    /**
-     * Set the Test User.
-     * @param user The user.
-     */
-    public void setTestUser(final User user) {
-        this.testUser = user;
     }
 
     /**
@@ -216,6 +194,7 @@ public class SystemEnvironment {
      */
     @After
     public void afterScenario(final Scenario scenario) {
+        log += "<tr><td>User Name :</td><td>" + getUsername() + "</td></tr>";
         String consoleLogs = captureConsoleLogs();
         // report the status of the scenario to standard output
         info("\n>>>>>> Feature : [" + featureName.split("_")[0] + "]"
@@ -235,14 +214,10 @@ public class SystemEnvironment {
                     + driver.getCurrentUrl()
                     + "</td></tr>";
 
-            // if a Test User was created for this test
-
-            if (null != testUser) {
-                // log the test user's name into the table
-                log += "<tr><td>TestUser name :</td><td>"
-                        + testUser.userName
-                        + "</td></tr>";
-            }
+            // log the test user's name into the table
+            log += "<tr><td>TestUser name :</td><td>"
+                    + getUsername()
+                    + "</td></tr>";
 
             // indicate that a screenshot was captured in the
             // standard output

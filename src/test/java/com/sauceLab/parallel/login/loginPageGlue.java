@@ -28,9 +28,7 @@ public class loginPageGlue {
      */
     @When("^I try to login with valid email and password$")
     public void loginWithValidCredentials() {
-        sauceLabObj.setTestUser(sauceLabObj
-                .getTestUser()
-                .generalUser(USERNAME));
+        sauceLabObj.setUsername(USERNAME);
 
         sauceLabObj.getLoginPage().enterUsername(USERNAME)
                 .enterPassword(PASSWORD)
