@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.sauceLab.utilities.TestLogger.error;
 import static com.sauceLab.utilities.TestLogger.info;
@@ -120,35 +124,25 @@ public final class FileSystemConnector {
 		}
 	}
 
-	/**
-	 * Prepare username for use in this test.
-	 * @return A {@link String} containing a random username
-	 * consisting of two randomly generated numbers between
-	 * 0 (exclusive) and 999999 (inclusive),
-	 * separated by an underscore.
-	 * <br>
-	 * Example: 123456_654321, 1_2, 81_818181 or any other combination.
-	 */
-	public static String getUsername() {
-		final int max = 999999;
-		final int min = 0;
-		final double formulaResult
-				= (Math.random() * ((max - min) + 1))
-				+ min;
-		return Math.round(formulaResult)
-				+ "_"
-				+ Math.round(formulaResult);
-	}
-
-	/**
-	 * Convert a Windows path to ta linux path by replacing the
-	 * file separator.
-	 * @param windowsPath A String path using Windows file separators.
-	 * @return A {@link String } containing the supplied path where all file
-	 * separators have been switched to linux file separators.
-	 */
-	public static String linuxPath(final String windowsPath) {
-		return windowsPath.replace("\\", "/")
-				.replace(":", "");
+	public static void zipDirectory(Path sourceDirPath, Path zipFilePath) throws IOException {
+		try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath.toFile()))) {
+			Files.walk(sourceDirPath)
+					.filter(path -> !Files.isDirectory(path))
+					.forEach(path -> {
+						ZipEntry zipEntry = new ZipEntry(sourceDirPath.relativize(path).toString());
+						try (FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
+							zipOutputStream.putNextEntry(zipEntry);
+							byte[] buffer = new byte[1024];
+							int length;
+							while ((length = fileInputStream.read(buffer)) >= 0) {
+								zipOutputStream.write(buffer, 0, length);
+							}
+							zipOutputStream.closeEntry();
+						} catch (IOException e) {
+							System.err.println("Error processing file: " + path);
+							e.printStackTrace();
+						}
+					});
+		}
 	}
 }

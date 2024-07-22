@@ -1,20 +1,23 @@
 package com.sauceLab.parallel.suite_glue;
 
 import com.sauceLab.models.ProductURLs;
-import com.sauceLab.utilities.FrameworkConfig;
-import com.sauceLab.utilities.RemoteWebDriverFactory;
-import com.sauceLab.utilities.UserDetailsConfig;
+import com.sauceLab.utilities.*;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
-import com.sauceLab.utilities.FileSystemConnector;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.sauceLab.utilities.TestConstants.EMAIL_TO;
+import static com.sauceLab.utilities.TestConstants.SEND_EMAIL;
 import static com.sauceLab.utilities.TestLogger.info;
 
 @CucumberOptions(
@@ -33,6 +36,7 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
      */
     private final String suiteName = "full_regression";
 
+	private String clientName = null;
     /**
      * The variables that pertain to the specifications of this test, that 
      * must be set prior to execution, are set in this method.
@@ -49,6 +53,7 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 			final String client,
 			final String productURL) {
 
+		this.clientName = client;
 		// set the browser for this set of tests
 		info("I am setting the browser for this suite of tests");
 
@@ -85,20 +90,37 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
      * Finalize and flush the report.
      */
     @AfterSuite
-    private void sendReport() {
+    private void sendReport() throws IOException {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM_dd_uuuu");
 		LocalDateTime localDateTime = LocalDateTime.now();
 
 		String folderPath = System.getProperty("user.dir") + "/_reports";
 		String logsFolderPath = System.getProperty("user.dir") + "/_logs";
         String archivePath = String.valueOf(Paths
-                .get(System.getProperty("user.dir"))
-                .getParent())
+                .get(System.getProperty("user.dir")))
                 .replace("\\", "/") + "/archive/";
+
 		String destinationDirectory = archivePath
 				+ ProductURLs.getProductName() + "/"
 				+ dtf.format(localDateTime) + "/"
 				+ RemoteWebDriverFactory.getBrowser();
+
+		if(SEND_EMAIL) {
+			//Create Zip Folder
+			String zipFilePath = folderPath + ".zip";
+			Path targetDir = Path.of(folderPath);
+			FileSystemConnector.zipDirectory(targetDir,Path.of(zipFilePath));
+
+			//Send Report
+			EmailConnector emailConnector = new EmailConnector();
+
+			String subject = "Execution Report for the client " + this.clientName;
+			String bodyContent = "Please Find Execution Report for " + EMAIL_TO;
+			File tempFile = new File(zipFilePath);
+
+			emailConnector.sendEmailWithAttachment(EMAIL_TO,subject,bodyContent,tempFile);
+			FileSystemConnector.deleteFile(zipFilePath);
+		}
 
 		// Save Report to archive
 		FileSystemConnector.copyFolder(folderPath,
@@ -110,5 +132,7 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 		//Delete old execution report
 		FileSystemConnector.deleteDir(folderPath);
 		FileSystemConnector.deleteDir(destinationDirectory + "/logs");
+
+
 	}
 }

@@ -5,19 +5,20 @@ import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
 
 import static com.sauceLab.utilities.TestConstants.DOCKER_GRID_URL;
-
-import static com.sauceLab.utilities.TestLogger.info;
 import static com.sauceLab.utilities.TestLogger.error;
+import static com.sauceLab.utilities.TestLogger.info;
 
 public final class RemoteWebDriverFactory {
 
@@ -112,7 +113,6 @@ public final class RemoteWebDriverFactory {
 		instantiateWebDriverWithDocker(browser);
 
 		if (null != REMOTE_WEB_DRIVER.get()) {
-
 			REMOTE_WEB_DRIVER.get()
 					.manage()
 					.window()
@@ -134,20 +134,28 @@ public final class RemoteWebDriverFactory {
 		info(infoStatement);
 
 		MutableCapabilities options = null;
+
 		switch (browser) {
-			case "firefox" -> options = new FirefoxOptions();
-			case "chrome" -> options = new ChromeOptions();
+			case "firefox" -> {
+				options = new FirefoxOptions();
+			}
 			case "microsoftedge" -> {
 				options = new EdgeOptions();
-				browser = "MicrosoftEdge";
+
+			} default -> {
+				options = new ChromeOptions();
+				LoggingPreferences logPrefs
+						= new LoggingPreferences();
+				logPrefs.enable(LogType.BROWSER, Level.ALL);
+				options.setCapability(
+						"goog:loggingPrefs",
+						logPrefs);
 			}
 		}
-		
-		if (null != options) {
-			options = options.merge(options);
-		}
 
-		try {
+        options = options.merge(options);
+
+        try {
 			if (null != options) {
 				REMOTE_WEB_DRIVER.set(
 						new RemoteWebDriver(new URL(DOCKER_GRID_URL), options));

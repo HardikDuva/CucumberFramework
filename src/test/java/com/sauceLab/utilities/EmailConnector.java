@@ -1,312 +1,82 @@
 package com.sauceLab.utilities;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import javax.mail.Store;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.MessagingException;
-import javax.mail.BodyPart;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.search.SubjectTerm;
-import java.io.IOException;
+import java.io.File;
 import java.util.Properties;
 
-import static com.sauceLab.utilities.TestLogger.info;
-import static com.sauceLab.utilities.TestLogger.error;
-import static com.sauceLab.utilities.TestLogger.debug;
+import static com.sauceLab.utilities.TestConstants.EMAIL_PASSWORD;
+import static com.sauceLab.utilities.TestConstants.EMAIL_USERNAME;
 
-public final class EmailConnector {
+public class EmailConnector {
 
     /**
      * There should be no instance of this class.
      */
-    private EmailConnector() { }
+    public EmailConnector() { }
 
-    /**
-     * The email of the email user.
-     */
-    private static final String USERNAME
-            = TestConstants.EMAIL_USERNAME;
-
-    /**
-     * The password of the email user.
-     */
-    private static final String PASSWORD
-            = TestConstants.EMAIL_PASSWORD;
-
-    /**
-     * The email store type
-     */
-    private static final String storeType
-            = TestConstants.EMAIL_STORE_TYPE;
-
-    /**
-     * The email host
-     */
-    private static final String host
-            = TestConstants.EMAIL_HOST;
-
-    /**
-     * The email port
-     */
-    private static final String port
-            = TestConstants.EMAIL_PORT;
-
-    /**
-     * Determine if the Email was received by the user by checking their
-     * inbox.
-     * @param inputMailSubject The subject of the expected email.
-     * @param myEmailAddress The email address of the recipient.
-     * @return A {@link Boolean } set to true if the user received the email.
-     */
-    public static boolean ifEmailReceived(
-            final String inputMailSubject,
-            final String myEmailAddress) {
-        final String folder = "INBOX";
-
-        Store store;
-        Folder inbox;
-        Message[] messages;
-
-        try {
-            Properties properties
-                    = getServerProperties(
-                            true,
-                            false);
-            Session session = Session.getInstance(
-                    properties, new Authenticator() {
-                protected
-                PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(USERNAME, PASSWORD);
-                }
-            });
-
-            store = session.getStore(storeType);
-            store.connect(host, USERNAME, PASSWORD);
-
-            info("Fetching latest Inbox Data with email " + myEmailAddress);
-            inbox = store.getFolder(folder);
-            inbox.open(Folder.READ_ONLY);
-            messages = inbox.search(new SubjectTerm(inputMailSubject));
-
-            if (messages.length > 0) {
-                for (Message message : messages) {
-                    if (message.getSubject().contains(inputMailSubject)) {
-                        if (message
-                                .getRecipients(Message.RecipientType.TO)[0]
-                                .toString().trim().
-                                equalsIgnoreCase(myEmailAddress)) {
-                            info("Mail Found");
-                            return true;
-                        }
-                    }
-                }
-            } else {
-                info("Messages was null");
-                return false;
-            }
-        } catch (MessagingException e) {
-            info("Mail not found with invalid email");
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieve the Email Data using the Subject and email address.
-     * @param inputMailSubject The Email subject.
-     * @param myEmailAddress The email address.
-     * @return A {@link String } containing the email data.
-     */
-    public static String getEmailData(
-            final String inputMailSubject,
-            final String myEmailAddress) {
-
-        final String folder = "INBOX";
-
-        Store store;
-        Folder inbox;
-        String mailData = null;
-        Message[] messages;
-
-        try {
-            Properties properties
-                    = getServerProperties(
-                    true,
-                    false);
-            Session session = Session.getInstance(
-                    properties,
-                    new Authenticator() {
-                        protected
-                        PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(USERNAME, PASSWORD);
-                        }
-                    });
-
-            store = session.getStore(storeType);
-            store.connect(host, USERNAME, PASSWORD);
-
-            inbox = store.getFolder(folder);
-            inbox.open(Folder.READ_ONLY);
-            messages = inbox.search(new SubjectTerm(inputMailSubject));
-            debug("Fetching latest Inbox Data for Subject ["
-                    + inputMailSubject
-                    + "] and To address is ["
-                    + myEmailAddress
-                    + "]");
-
-            if (messages.length > 0) {
-                for (Message message : messages) {
-                    if (message.getSubject().contains(inputMailSubject)) {
-                        if (message.getRecipients(
-                                Message.RecipientType.TO)[0].toString().trim().
-                                equalsIgnoreCase(myEmailAddress)) {
-                            info("Mail Found, Now Searching mail data");
-
-                            if (message.isMimeType("multipart/*")) {
-                                info("multipart");
-                                MimeMultipart mimeMultipart
-                                        = (MimeMultipart) message.getContent();
-                                mailData = getTextFromMimeMultipart(
-                                        mimeMultipart);
-                            } else if (message.isMimeType("text/html")) {
-                                info("text/html");
-                                mailData = (String) message.getContent();
-                            } else {
-                                info("The mail type was not recognized");
-                            }
-                            break;
-                        }
-                    }
-                }
-            } else {
-                info("Messages was null");
-            }
-        } catch (MessagingException | IOException e) {
-            error("Could not retrieve email with subject: ["
-                    + inputMailSubject
-                    + "] for user: ["
-                    + myEmailAddress
-                    + "]", e);
-        }
-        return mailData;
-    }
-
-    /**
-     * Retrieve the Server Properties using the provided protocol and settings.
-     * @param tls Turn Transport Layer Security on/off.
-     * @param ssl Turn Secure Sockets Layer on/off.
-     * @return A {@link Properties } object containing the server properties.
-     */
-    private static Properties getServerProperties(
-            final boolean tls,
-            final boolean ssl) {
-
+    public void sendEmailWithAttachment(String toEmail, String subject, String body, File attachment) {
+        // Set up the SMTP server properties
+        String host = "outlook.office365.com";
         Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", "25");
 
-        // server setting
-        properties.put(
-                String.format(
-                        "mail.%s.host",
-                        storeType), host);
-        properties.put(
-                String.format(
-                        "mail.%s.port",
-                        storeType), port);
+        // Set up the email credentials
+        final String username = EMAIL_USERNAME;
+        final String password = EMAIL_PASSWORD;
 
-        properties.setProperty(
-                String.format(
-                        "mail.%s.auth",
-                        storeType), "true");
-        properties.setProperty(
-                String.format(
-                        "mail.%s.starttls.enable",
-                        storeType), String.valueOf(tls));
-
-        if (ssl) {
-            // SSL setting
-            properties.setProperty(
-                    String.format(
-                            "mail.%s.socketFactory.class",
-                            storeType), "javax.net.ssl.SSLSocketFactory");
-            properties.setProperty(
-                    String.format(
-                            "mail.%s.socketFactory.fallback",
-                            storeType), "false");
-            properties.setProperty(
-                    String.format(
-                            "mail.%s.socketFactory.port",
-                            storeType), port);
-        }
-
-        return properties;
-    }
-
-    /**
-     * Retrieve the text content from the Mime Multipart of the Email.
-     * @param mimeMultipart The MimeMultipart of the Email.
-     * @return A {@link String } containing the text of the email.
-     */
-    private static String getTextFromMimeMultipart(
-            final MimeMultipart mimeMultipart) {
-        StringBuilder result = new StringBuilder();
-        try {
-            int count = mimeMultipart.getCount();
-            BodyPart bodyPart;
-            if (count > 0) {
-                bodyPart = mimeMultipart.getBodyPart(0);
-                if (bodyPart.isMimeType("text/plain")) {
-                    result.append("\n").append(bodyPart.getContent());
-                } else {
-                    for (int i = 1; i < count; i++) {
-                        bodyPart = mimeMultipart.getBodyPart(i);
-                        if (bodyPart.isMimeType("text/html")) {
-                            result
-                                    = new StringBuilder((String)
-                                    bodyPart.getContent());
-                        } else if (bodyPart.getContent()
-                                instanceof MimeMultipart) {
-                            result.append(getTextFromMimeMultipart(
-                                    (MimeMultipart) bodyPart.getContent()));
-                        }
+        Session session = Session.getInstance(
+                properties, new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
                     }
-                }
-                return String.valueOf(result);
-            }
+                });
 
-        } catch (MessagingException | IOException e) {
-            error("An Exception was caught while retrieving "
-                    + "text from mime multipart", e);
+        try {
+            // Create a default MimeMessage object
+            Message message = new MimeMessage(session);
+
+            // Set From: header field
+            message.setFrom(new InternetAddress(username));
+
+            // Set To: header field
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+
+            // Set Subject: header field
+            message.setSubject(subject);
+
+            // Create the message part
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(body);
+
+            // Create a multipart message
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+            // Create another body part for the attachment
+            messageBodyPart = new MimeBodyPart();
+            DataSource source = new FileDataSource(attachment);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(attachment.getName());
+            multipart.addBodyPart(messageBodyPart);
+
+            // Send the complete message parts
+            message.setContent(multipart);
+
+            // Send message
+            Transport.send(message);
+            System.out.println("Sent email successfully....");
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
-        return result.toString();
     }
-
-    /**
-     * Retrieve the HyperLink from an Email as a String.
-     * @param htmlMailContent The email content.
-     * @param hyperLinkText The expected hyperlink text.
-     * @return A {@link String } containing the hyperlink from the email.
-     */
-    public static String getHyperLinkUsingLinkTextFromEmailHTMLContent(
-            final String htmlMailContent,
-            final String hyperLinkText) {
-        Document document = Jsoup.parse(htmlMailContent);
-        Elements links = document.select("a[href]");
-        for (Element link : links) {
-            info("Link found  is [" + link + "]");
-            if (link.text().trim().equalsIgnoreCase(hyperLinkText)) {
-                return link.attr("href");
-            }
-        }
-        return null;
-    }
-
 }

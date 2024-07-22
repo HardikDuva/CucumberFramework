@@ -28,24 +28,6 @@ public final class TestConstants {
 	/**
 	 * The
 	 */
-	public static final String EMAIL_STORE_TYPE
-			= FrameworkConfig.get("EMAIL_STORE_TYPE");
-
-	/**
-	 * The
-	 */
-	public static final String EMAIL_HOST
-			= FrameworkConfig.get("EMAIL_HOST");
-
-	/**
-	 * The
-	 */
-	public static final String EMAIL_PORT
-			= FrameworkConfig.get("EMAIL_PORT");
-
-	/**
-	 * The
-	 */
 	public static final String EMAIL_USERNAME
 			= FrameworkConfig.get("EMAIL_USERNAME");
 
@@ -54,6 +36,12 @@ public final class TestConstants {
 	 */
 	public static final String EMAIL_PASSWORD
 			= FrameworkConfig.get("EMAIL_PASSWORD");
+
+	/**
+	 * The
+	 */
+	public static final String EMAIL_TO
+			= FrameworkConfig.get("EMAIL_TO");
 
 	/**
 	 * Condition Red there are failures.
@@ -113,5 +101,11 @@ public final class TestConstants {
 	 */
 	public static final String DOCKER_GRID_URL
 			= FrameworkConfig.get("DOCKER_GRID_URL");
+
+	/**
+	 * The Selenium GRID URL used to route tests to waiting nodes.
+	 */
+	public static final boolean SEND_EMAIL
+			= Boolean.parseBoolean(FrameworkConfig.get("SEND_EMAIL"));
 
 }

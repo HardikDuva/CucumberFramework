@@ -185,6 +185,9 @@ public class SystemEnvironment {
      */
     @Before
     public void beforeScenario(final Scenario scenario) {
+        DateTimeFormatter dtfmonth = DateTimeFormatter.ofPattern("MM_dd_uuuu");
+        LocalDateTime localDateTime = LocalDateTime.now();
+
         // Log test details into an HTML table to display in the HTML report
         log = "<h2>Framework Console Logs</h2>";
         log += "</br><span><table><tbody>";
@@ -193,12 +196,8 @@ public class SystemEnvironment {
         log += "<tr><td>Browser Name :</td><td>"
                 + RemoteWebDriverFactory.getBrowser()
                 + "</td></tr>";
-
         featureName = "TEST-" + String.valueOf(scenario.getUri())
                 .split("TEST-")[1].split("\\.")[0];
-
-        DateTimeFormatter dtfmonth = DateTimeFormatter.ofPattern("MM_dd_uuuu");
-        LocalDateTime localDateTime = LocalDateTime.now();
 
         featureName = featureName
                 + "_"
@@ -271,7 +270,7 @@ public class SystemEnvironment {
         // parse it for the table of data it holds
         File file = new File(path);
 
-        Scanner scan = null;
+        Scanner scan;
         boolean output = false;
         StringBuilder outputString = new StringBuilder();
         try {
@@ -285,6 +284,7 @@ public class SystemEnvironment {
                         // start outputting the table to a string
                         output = true;
                     }
+
                     if (output) {
                         // Implicitly set the font to black on the
                         // Cucumber report
@@ -328,6 +328,7 @@ public class SystemEnvironment {
             warn("File Not Found Exception thrown while reading"
                             + " log file [" + path + "] to memory.", e);
         }
+
         // Attach the framework log to the scenario log for the html report
         log += "</br><span>" + outputString + "</span>";
         // output the scenario logs to the logger
