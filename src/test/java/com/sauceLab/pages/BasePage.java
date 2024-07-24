@@ -5,16 +5,18 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
-
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TimeoutException;
 
 import static com.sauceLab.utilities.TestConstants.*;
 import static com.sauceLab.utilities.TestLogger.*;
@@ -944,6 +946,7 @@ public abstract class BasePage {
 	 * @param <T>     Either a 'By' or a 'WebElement'
 	 */
 	public <T> void click(T element) {
+		info("Click on " + getText(element));
 		if (null != element) {
 			if (element instanceof WebElement) {
 				if (((WebElement) element).isEnabled()) {
@@ -1336,7 +1339,7 @@ public abstract class BasePage {
 	 */
 	public String getPageURL() {
 		String currentURL = driver.getCurrentUrl();
-		debug("Returning Current URL " + currentURL);
+		info("Returning Current URL " + currentURL);
 		waitStandard();
 		return currentURL;
 	}
@@ -1347,7 +1350,7 @@ public abstract class BasePage {
 	 */
 	public String getTitle() {
 		String title = driver.getTitle();
-		debug("Returning Title of Page " + title);
+		info("Returning Title of Page " + title);
 		waitStandard();
 		waitForPageToLoad();
 		return title;

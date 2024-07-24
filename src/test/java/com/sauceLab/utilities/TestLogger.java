@@ -43,36 +43,11 @@ public final class TestLogger {
     }
 
     /**
-     * Log a warn message.
-     * @param message The message to log.
-     * @param exceptions The exception that occurred.
-     */
-    public static void warn(final String message,
-                            final Exception...exceptions) {
-
-        for (Exception exception : exceptions) {
-            LOGGER.warn(message, exception);
-        }
-    }
-
-    /**
      * Log a warning message.
      * @param message The message to log.
      */
     public static void warn(final String message) {
         LOGGER.warn(message);
-    }
-
-    /**
-     * Log a debug message providing any exceptions that occurred.
-     * @param message The message to log.
-     * @param exceptions The exception that occurred.
-     */
-    public static void debug(final String message,
-                             final Exception...exceptions) {
-        for (Exception exception : exceptions) {
-            LOGGER.debug(message, exception);
-        }
     }
 
     /**
@@ -107,25 +82,4 @@ public final class TestLogger {
         fail(message);
     }
 
-    /**
-     * Log a trace level message providing all
-     * relevant exceptions.
-     * @param message The message to log.
-     * @param exceptions The exception that occurred.
-     */
-    public static void trace(final String message,
-                             final Exception...exceptions) {
-
-        for (Exception exception : exceptions) {
-            LOGGER.trace(message, exception);
-        }
-    }
-
-    /**
-     * Log a trace level message.
-     * @param message The message to log.
-     */
-    public static void trace(final String message) {
-        LOGGER.trace(message);
-    }
 }

@@ -22,7 +22,7 @@ public class loginPageGlue {
     public loginPageGlue(final SystemEnvironment sysEnv) {
         this.sauceLabObj = sysEnv;
     }
-
+    
     /**
      * The user search the product
      */

@@ -22,8 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Scanner;
 
-import static com.sauceLab.utilities.TestLogger.info;
-import static com.sauceLab.utilities.TestLogger.warn;
+import static com.sauceLab.utilities.TestLogger.*;
 
 public class SystemEnvironment {
 
@@ -300,7 +299,7 @@ public class SystemEnvironment {
                         + "will not be added to the report for this test.");
             }
         } catch (FileNotFoundException e) {
-            warn("File Not Found Exception thrown while reading"
+            error("File Not Found Exception thrown while reading"
                             + " log file [" + path + "] to memory.", e);
         }
 
