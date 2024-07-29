@@ -16,8 +16,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.sauceLab.utilities.TestConstants.EMAIL_TO;
-import static com.sauceLab.utilities.TestConstants.SEND_EMAIL;
+import static com.sauceLab.utilities.TestConstants.*;
 import static com.sauceLab.utilities.TestLogger.info;
 
 @CucumberOptions(
@@ -37,6 +36,8 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
     private final String suiteName = "full_regression";
 
 	private String clientName = null;
+	private String browserName = null;
+
     /**
      * The variables that pertain to the specifications of this test, that 
      * must be set prior to execution, are set in this method.
@@ -45,15 +46,14 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
      */
     @Parameters({
             "BROWSER",
-			"CLIENT",
-            "PRODUCT_URL"})
+			"CLIENT"})
 	@BeforeSuite
 	private void setVariablesForTest(
             final String browser,
-			final String client,
-			final String productURL) {
+			final String client) {
 
 		this.clientName = client;
+		this.browserName = browser;
 		// set the browser for this set of tests
 		info("I am setting the browser for this suite of tests");
 
@@ -68,7 +68,7 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 				+ "/dependencies/client/" + client + "/user.properties");
 
 		// set the url for these tests
-		ProductURLs.setCurrentProductEnvironment(productURL);
+		ProductURLs.setCurrentProductEnvironment(PRODUCT_URL);
 
 	}
 
@@ -115,7 +115,10 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 			EmailConnector emailConnector = new EmailConnector();
 
 			String subject = "Execution Report for the client " + this.clientName;
-			String bodyContent = "Please Find Execution Report for " + EMAIL_TO;
+			String bodyContent = "Please Find Attached Execution Report with" +
+					"\n Browser : " + this.browserName +
+					"\n Time    : " + DateTimeConnector.getTimeStampWithLocaleEnglish();
+
 			File tempFile = new File(zipFilePath);
 
 			emailConnector.sendEmailWithAttachment(EMAIL_TO,subject,bodyContent,tempFile);
@@ -131,7 +134,7 @@ public class SauceLabFullRegressionTest extends AbstractTestNGCucumberTests {
 
 		//Delete old execution report
 		FileSystemConnector.deleteDir(folderPath);
-		FileSystemConnector.deleteDir(destinationDirectory + "/logs");
+		FileSystemConnector.deleteDir(logsFolderPath);
 
 
 	}

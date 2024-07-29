@@ -8,6 +8,12 @@ public final class TestConstants {
 	private TestConstants() { }
 
 	/**
+	 * The PRODUCT URL
+	 */
+	public static final String PRODUCT_URL
+			= UserDetailsConfig.get("PRODUCT_URL");
+
+	/**
 	 * The UserName
 	 */
 	public static final String USERNAME
