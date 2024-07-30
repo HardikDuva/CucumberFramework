@@ -35,8 +35,6 @@ This framework is capable of execution on the command line using maven, or throu
 	Tests can be executed from the command line using maven.
 	- i.e. mvn test (this will execute all regression tests)
 	Tests can also be executed for any suite by using the following syntax
-	- mvn test -DsuiteXmlFile=nameOfTheXmlFileWithoutTheExtension
-	i.e. mvn test -DsuiteXmlFile=atmos_vx_test_runner
 	- Alternatively you can execute any of the Suite XML files from the IDE directly
 	Tests are expecting there to be a Grid up and running with a node they can use
 	- This is currently achieved using Docker on the local Machine

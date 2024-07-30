@@ -1,4 +1,4 @@
-package com.sauceLab.pages.sauceLab.login;
+package com.sauceLab.pages.login;
 
 import com.sauceLab.pages.BasePage;
 import org.openqa.selenium.WebDriver;

@@ -1,6 +1,6 @@
 package com.sauceLab.parallel;
 
-import com.sauceLab.pages.sauceLab.login.LoginPage;
+import com.sauceLab.pages.login.LoginPage;
 import com.sauceLab.utilities.RemoteWebDriverFactory;
 import io.cucumber.java.en.Given;
 import org.slf4j.MDC;

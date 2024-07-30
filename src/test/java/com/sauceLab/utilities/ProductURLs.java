@@ -1,4 +1,4 @@
-package com.sauceLab.models;
+package com.sauceLab.utilities;
 import static com.sauceLab.utilities.TestLogger.info;
 
 public class ProductURLs {
@@ -17,6 +17,5 @@ public class ProductURLs {
 	public static String getProductName() {
 		return productURL.split("www.")[1].split(".com")[0];
 	}
-
 
 }

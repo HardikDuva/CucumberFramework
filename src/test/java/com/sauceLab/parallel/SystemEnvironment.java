@@ -1,7 +1,7 @@
 package com.sauceLab.parallel;
 
-import com.sauceLab.models.ProductURLs;
-import com.sauceLab.pages.sauceLab.login.LoginPage;
+import com.sauceLab.utilities.ProductURLs;
+import com.sauceLab.pages.login.LoginPage;
 import com.sauceLab.utilities.RemoteWebDriverFactory;
 import com.sauceLab.utilities.TestConstants;
 import io.cucumber.java.After;
