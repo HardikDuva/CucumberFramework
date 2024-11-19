@@ -13,8 +13,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <selenium.version>4.22.0</selenium.version>
-    <cucumber.version>7.18.0</cucumber.version>
+    <selenium.version>4.25.0</selenium.version>
+    <cucumber.version>7.20.1</cucumber.version>
   </properties>
 
   <dependencies>

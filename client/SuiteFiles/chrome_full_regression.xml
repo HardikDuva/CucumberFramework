@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="__Sauce-Lab_Chrome_Full_Regression_Suite" parallel="tests" data-provider-thread-count="4">
+<suite name="__Sauce-Lab_Chrome_Full_Regression_Suite" parallel="tests" data-provider-thread-count="2">
     <parameter name="BROWSER" value="chrome"/>
     <parameter name="CLIENT" value="sauceLab"/>
     <test name="Sauce-Lab Chrome - Full Regression">
